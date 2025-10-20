@@ -37,6 +37,23 @@
         }
         .fullscreen-popup.active { display: flex; }
 
+        /* TASK 1: PRELOADER STYLES */
+        #preloader {
+            z-index: 9999; /* Выше всех */
+            background: #131B22;
+            flex-direction: column;
+        }
+        #preloader h2 {
+            color: white;
+            font-family: 'SB Sans', Arial, sans-serif;
+            font-weight: bold;
+        }
+        #preloader.hidden {
+            display: none;
+        }
+        /* END TASK 1 */
+
+
         .popup-content {
             width: 100%;
             max-width: 1000px;
@@ -209,6 +226,7 @@
             background-repeat: no-repeat;
             background-position: center;
             image-rendering: pixelated;
+            margin-top: 40px; /* TASK 2: Опустить героя */
         }
         #orientation-warning {
             position: fixed;
@@ -246,6 +264,12 @@
     </style>
 </head>
 <body>
+    <div id="preloader" class="fullscreen-popup active">
+        <div style="text-align: center;">
+            <h2 style="color: white; font-family: 'SB Sans', Arial, sans-serif;">Загрузка...</h2>
+        </div>
+    </div>
+
     <div id="orientation-warning">
         <img src="images/rotate.png" alt="Поверните устройство">
         <h2>Пожалуйста, поверните устройство</h2>
@@ -318,6 +342,9 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            // TASK 1: Preloader element
+            const preloader = document.getElementById('preloader');
+
             // Элементы интерфейса
             const elements = {
                 startScreen: document.getElementById('start-screen'),
@@ -336,6 +363,10 @@
                 resultText: document.getElementById('result-text'),
                 heroFinal: document.getElementById('hero-final'),
             };
+
+            // TASK 1: Disable start button during preload
+            elements.startBtn.style.opacity = '0.5';
+            elements.startBtn.style.pointerEvents = 'none';
 
             // Константы игры
             const constants = {
@@ -365,7 +396,6 @@
                     game: null,
                     time: null
                 },
-                // isAnimating удален
                 isTransitioning: false,
                 currentDirection: 'idle',
                 targetDirection: 'idle',
@@ -373,7 +403,7 @@
                 idleTimeout: null
             };
 
-            // Спрайты персонажа (обновлены для финального экрана)
+            // Спрайты персонажа
             const sprites = {
                 idle: 'images/barista0.png',
                 left: Array.from({length: 9}, (_, i) => `images/left${i}.png`),
@@ -383,6 +413,76 @@
                 victory: ['images/fherodance-4.webp'], 
                 defeat: ['images/herodancedie.webp']
             };
+
+            // --- TASK 1: PRELOADER LOGIC ---
+            const imagesToPreload = [
+                // Backgrounds
+                'images/gameback.svg',
+                'images/cafe6.png',
+                // UI & Screens
+                'images/Logo.svg',
+                'images/poster.png',
+                'images/rotate.png',
+                'bbt play.png',
+                'bbt reg.png',
+                'bbt hellplaylist.png',
+                // Game Items
+                'images/coin.png',
+                'images/heart.png',
+                'images/clock.png',
+                'images/superheart.png',
+                'images/skull.png',
+                'images/superskull.png',
+                // Effects
+                'images/blove.png',
+                'images/firehero.png',
+                // Hero Sprites (from sprites object)
+                sprites.idle,
+                ...sprites.left,
+                ...sprites.right,
+                ...sprites.preLeft,
+                ...sprites.preRight,
+                ...sprites.victory,
+                ...sprites.defeat
+            ];
+            
+            const uniqueImagesToPreload = [...new Set(imagesToPreload)];
+
+            function preloadImages(urls, callback) {
+                let loadedCount = 0;
+                const totalImages = urls.length;
+
+                if (totalImages === 0) {
+                    callback();
+                    return;
+                }
+
+                urls.forEach(url => {
+                    const img = new Image();
+                    img.src = url;
+                    img.onload = () => {
+                        loadedCount++;
+                        if (loadedCount === totalImages) {
+                            callback();
+                        }
+                    };
+                    img.onerror = () => {
+                        loadedCount++;
+                        // console.error(`Failed to load: ${url}`);
+                        if (loadedCount === totalImages) {
+                            callback();
+                        }
+                    };
+                });
+            }
+
+            preloadImages(uniqueImagesToPreload, () => {
+                preloader.classList.add('hidden'); // Hide preloader
+                elements.startBtn.style.opacity = '1'; // Enable start button
+                elements.startBtn.style.pointerEvents = 'auto';
+            });
+            // --- END TASK 1 ---
+
 
             // Проверка ориентации
             function checkOrientation() {
@@ -422,7 +522,6 @@
 
             // Управление персонажем
             function handleKeyDown(e) {
-                // Убран check state.isAnimating
                 if (!state.gameRunning) return; 
                 
                 if (e.key === 'ArrowLeft') {
@@ -443,7 +542,7 @@
             // Анимация движения
             let spriteIndex = 0;
             function updateSprite(direction) {
-                if (state.isTransitioning) return; // Убран check state.isAnimating
+                if (state.isTransitioning) return;
                 
                 if ((state.currentDirection === 'idle' && direction !== 'idle') || 
                     (state.currentDirection !== direction && direction !== 'idle')) {
@@ -463,7 +562,7 @@
                         
                         elements.barista.style.backgroundImage = `url('${sprites[transitionType][frame]}')`;
                         frame++;
-                        setTimeout(animateTransition, 30); 
+                        setTimeout(animateTransition, 20); // TASK 3: Ускорить анимацию
                     };
                     
                     animateTransition();
@@ -476,7 +575,7 @@
                 
                 clearTimeout(state.idleTimeout);
                 state.idleTimeout = setTimeout(() => {
-                    if (!state.isTransitioning && state.currentDirection !== 'idle') { // Убран check state.isAnimating
+                    if (!state.isTransitioning && state.currentDirection !== 'idle') {
                         const transitionBack = state.currentDirection === 'left' ? 'preLeft' : 'preRight';
                         state.isTransitioning = true;
                         state.targetDirection = 'idle';
@@ -492,12 +591,12 @@
                             
                             elements.barista.style.backgroundImage = `url('${sprites[transitionBack][frame]}')`;
                             frame--;
-                            setTimeout(animateTransitionBack, 30);
+                            setTimeout(animateTransitionBack, 20); // TASK 3: Ускорить анимацию
                         };
                         
                         animateTransitionBack();
                     }
-                }, 100); 
+                }, 50); // TASK 3: Уменьшить задержку до простоя
             }
 
             // Генерация предметов
@@ -572,7 +671,6 @@
                 if (type === 'superLike') {
                     state.lives = Math.min(state.lives + value, constants.MAX_LIVES);
                     elements.livesCount.textContent = state.lives;
-                    // Убрана playHeroAnimation
                     showOverlayEffect('blove.png');
                 } else {
                     state.likes += value;
@@ -589,7 +687,6 @@
             // Обработка столкновения с опасностями
             function handlePenaltyCollision(type, value) {
                 if (type === 'superFire') {
-                    // Убрана playHeroAnimation
                     showOverlayEffect('firehero.png');
                 }
                 
@@ -603,14 +700,14 @@
                 }
             }
 
-            // Показать оверлей эффекта (обновлено до 1000мс)
+            // Показать оверлей эффекта
             function showOverlayEffect(imageName) {
                 elements.baristaOverlay.style.backgroundImage = `url('images/${imageName}')`;
                 elements.baristaOverlay.style.display = 'block';
                 setTimeout(() => {
                     elements.baristaOverlay.style.display = 'none';
                     elements.baristaOverlay.style.backgroundImage = 'none';
-                }, 1000); // 1 секунда
+                }, 1000); 
             }
 
             // Взвешенный случайный выбор
@@ -635,12 +732,10 @@
                 if (isWin) {
                     elements.resultTitle.textContent = 'Вау! Вы — рок-звезда!';
                     elements.resultText.textContent = 'Собрали нужное количество лайков, а не штрафов! Поддержим вашу победу плейлистом на Хэллоуин!';
-                    // Финальная анимация победы
                     elements.heroFinal.style.backgroundImage = `url('${sprites.victory[0]}')`;
                 } else {
                     elements.resultTitle.textContent = 'Игра окончена';
                     elements.resultText.textContent = 'Ой… Похоже, гости ушли в другую кофейню. Заварите себе вдохновляющий эспрессо и попробуйте снова! Может, вам поможет наш плейлист на Хэллоуин?';
-                    // Финальная анимация поражения
                     elements.heroFinal.style.backgroundImage = `url('${sprites.defeat[0]}')`;
                 }
                 
@@ -654,7 +749,6 @@
                 state.likes = 0;
                 state.lives = 3;
                 state.timeLeft = constants.INITIAL_TIME;
-                // isAnimating/isTransitioning/currentDirection сохранены для корректного сброса движения
                 state.isTransitioning = false;
                 state.currentDirection = 'idle';
                 state.targetDirection = 'idle';

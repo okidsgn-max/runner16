@@ -11,7 +11,7 @@
             padding: 0;
             font-family: 'SB Sans', Arial, sans-serif;
             overflow: hidden;
-            /* Цвет фона */
+            /* ИЗМЕНЕНО 3: Цвет фона */
             background: #13181F url('images/gameback.svg') no-repeat center center fixed; 
             background-size: cover; 
             color: white;
@@ -29,7 +29,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            /* Цвет фона */
+            /* ИЗМЕНЕНО 3: Цвет фона */
             background: #13181F;
             backdrop-filter: blur(10px);
             display: none;
@@ -42,11 +42,12 @@
         .popup-content {
             width: 100%;
             max-width: 1000px;
-            /* ИЗМЕНЕНО: Установлена относительная высота для лучшей адаптации */
             height: 80vh;
-            max-height: 600px; 
+            max-height: 600px;
+            /* ИЗМЕНЕНО 3: Цвет фона */
             background: #13181F;
-            display: flex;
+            
+           display: flex;
             overflow: hidden;
             box-shadow: 0 0 30px rgba(0, 0, 0, 0.7);
         }
@@ -60,9 +61,10 @@
         }
         .image-content {
             flex: 1;
+            /* ИЗМЕНЕНО 3: Цвет фона */
             background: #13181F;
             display: flex;
-            /* Центрирование hero-final */
+            /* ИЗМЕНЕНО 1: Центрирование hero-final */
             justify-content: center;
             align-items: center;
             padding: 0px;
@@ -108,9 +110,9 @@
             transform: scale(1.05);
         }
 
-        /* Стиль для кнопки плейлиста на финальном экране */
+        /* Стиль для кнопки плейлиста на финальном экране: увеличена на 30% и яркость 100% */
         .playlist-btn-final {
-            height: 65px;
+            height: 65px; /* 50px * 1.3 = 65px */
             opacity: 1.0; 
         }
 
@@ -133,10 +135,9 @@
             margin: 0 auto;
             max-width: 1000px; 
             max-height: 600px;
-            /* Адаптация для мобильных */
+            /* ИЗМЕНЕНО 4: Добавлено для масштабирования на мобильных */
             transform-origin: center center;
             transition: transform 0.2s ease-out;
-            cursor: pointer; /* Курсор для тач-управления */
         }
 
         /* Бариста */
@@ -152,7 +153,7 @@
             image-rendering: pixelated;
         }
         
-        /* Оверлей эффектов */
+        /* Оверлей эффектов (сверху персонажа) */
         #barista-effect-overlay {
             position: absolute;
             top: 0;
@@ -163,7 +164,7 @@
             background-repeat: no-repeat;
             background-position: top center;
             display: none;
-            z-index: 6;
+            z-index: 6; /* Сверху z-index: 5 у баристы */
             image-rendering: pixelated;
         }
 
@@ -178,7 +179,7 @@
             image-rendering: pixelated;
         }
 
-        /* Стиль статистики */
+        /* Стиль статистики и предупреждений */
         #stats {
             position: absolute;
             top: 20px;
@@ -204,10 +205,10 @@
             height: 40px;
         }
         .glow-green {
-            filter: drop-shadow(0 0 15px rgba(255, 62, 44, 0.7));
+            filter: drop-shadow(0 0 15px rgba(255, 62, 44, 0.7)); /* #ff3e2c */
         }
         .glow-red {
-            filter: drop-shadow(0 0 15px rgba(246, 147, 53, 0.7));
+            filter: drop-shadow(0 0 15px rgba(246, 147, 53, 0.7)); /* #f69335 */
         }
         #hero-final {
             width: 328px;
@@ -241,41 +242,46 @@
             margin-bottom: 30px;
         }
 
-        /* ИЗМЕНЕНИЕ 1: Стили для линии загрузки на стартовом экране */
-        #loading-bar-wrapper {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 10px; 
-            background: #2a313a; /* Фон бара */
-            z-index: 1001; 
+        /* ДОБАВЛЕНО 2: Стили для экрана загрузки */
+        #loading-screen {
+            z-index: 1001; /* Поверх других попапов */
+            flex-direction: column;
+        }
+        .loader-content {
+            text-align: center;
+            color: white;
+        }
+        .loader-content h2 { /* Стилизация нового h2 */
+            font-family: 'SB Sans', sans-serif;
+            font-size: 24px;
+            margin-bottom: 20px;
+            font-weight: normal;
+        }
+        .loader-bar-container {
+            width: 300px;
+            height: 20px;
+            background: #2a313a;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid #444;
         }
         .loader-bar {
-            width: 0%;
+            width: 0%; /* Начинается с 0 */
             height: 100%;
-            background: #4CAF50; 
-            transition: none; /* Убираем анимацию для плавного прогресса */
+            background: #4CAF50; /* Зеленый цвет */
+            border-radius: 10px;
+            transition: width 0.3s ease-out;
         }
         /* Конец стилей для загрузки */
 
-        /* Адаптация для мобильных */
         @media (max-width: 768px) {
             .popup-content {
                 flex-direction: column;
-                height: 100%; /* ИЗМЕНЕНО: Занять всю высоту попапа */
+                height: 90vh;
                 max-height: none;
-                /* Добавлен padding, чтобы контент не перекрывался полоской загрузки */
-                padding-bottom: 30px; 
             }
             .image-content {
                 display: none;
-            }
-            .text-content {
-                padding: 20px;
-            }
-            h1 {
-                font-size: 30px;
             }
         }
     </style>
@@ -285,6 +291,15 @@
         <img src="images/rotate.png" alt="Поверните устройство">
         <h2>Пожалуйста, поверните устройство</h2>
         <p>Для лучшего игрового опыта игра работает только в горизонтальной ориентации</p>
+    </div>
+
+    <div id="loading-screen" class="fullscreen-popup">
+        <div class="loader-content">
+            <h2>Загрузка...</h2>
+            <div class="loader-bar-container">
+                <div id="loader-bar" class="loader-bar"></div>
+            </div>
+        </div>
     </div>
 
     <div id="start-screen" class="fullscreen-popup active">
@@ -303,9 +318,6 @@
             <div class="image-content">
                 <img src="images/poster.png" alt="Постер">
             </div>
-        </div>
-        <div id="loading-bar-wrapper">
-            <div id="loader-bar" class="loader-bar"></div>
         </div>
     </div>
 
@@ -373,7 +385,8 @@
                 resultTitle: document.getElementById('result-title'),
                 resultText: document.getElementById('result-text'),
                 heroFinal: document.getElementById('hero-final'),
-                // ИЗМЕНЕНИЕ 1: Элемент полоски загрузки
+                // ДОБАВЛЕНО 2: Элементы загрузчика
+                loadingScreen: document.getElementById('loading-screen'),
                 loaderBar: document.getElementById('loader-bar'),
             };
 
@@ -390,8 +403,7 @@
                 INITIAL_TIME: 90,
                 WIN_SCORE: 10,
                 MAX_LIVES: 5,
-                SUPER_HEART_VALUE: 2,
-                MOBILE_MOVE_STEP: 30 // ИЗМЕНЕНИЕ 2: Увеличенный шаг для тач-управления
+                SUPER_HEART_VALUE: 2
             };
 
             // Состояние игры
@@ -401,18 +413,20 @@
                 lives: 3,
                 timeLeft: constants.INITIAL_TIME,
                 gameRunning: false,
-                isMobile: window.innerWidth <= 768 || ('ontouchstart' in window), // Улучшенная проверка на мобильность
+                isMobile: window.innerWidth <= 768,
                 intervals: {
                     game: null,
                     time: null
                 },
+                // isAnimating удален
                 isTransitioning: false,
                 currentDirection: 'idle',
                 targetDirection: 'idle',
+                lastMoveTime: 0,
                 idleTimeout: null
             };
 
-            // Спрайты персонажа
+            // Спрайты персонажа (обновлены для финального экрана)
             const sprites = {
                 idle: 'images/barista0.png',
                 left: Array.from({length: 9}, (_, i) => `images/left${i}.png`),
@@ -425,13 +439,6 @@
 
             // Проверка ориентации
             function checkOrientation() {
-                // Если не мобильный, предупреждение не показываем
-                if (!state.isMobile) {
-                    elements.orientationWarning.classList.remove('active');
-                    return true;
-                }
-                
-                // Для мобильных - проверяем
                 if (window.innerHeight > window.innerWidth) {
                     elements.orientationWarning.classList.add('active');
                     return false;
@@ -441,7 +448,7 @@
                 }
             }
 
-            // Функция масштабирования игрового контейнера
+            // ДОБАВЛЕНО 4: Функция масштабирования игрового контейнера
             function scaleGameContainer() {
                 if (!elements.gameContainer) return; 
                 
@@ -455,8 +462,10 @@
                 const scaleX = viewportWidth / gameWidth;
                 const scaleY = viewportHeight / gameHeight;
                 
+                // Используем меньший масштаб, чтобы все влезло
                 scale = Math.min(scaleX, scaleY);
                 
+                // Не масштабируем больше 100%
                 if (scale > 1) scale = 1; 
 
                 elements.gameContainer.style.transform = `scale(${scale})`;
@@ -464,11 +473,9 @@
 
             // Инициализация игры
             function initGame() {
-                state.isMobile = window.innerWidth <= 768 || ('ontouchstart' in window);
-                if (state.isMobile) {
-                    checkOrientation();
-                }
-
+                if (state.isMobile && !checkOrientation()) return;
+                
+                // ДОБАВЛЕНО 4: Масштабируем при инициализации
                 scaleGameContainer();
                 
                 resetBaristaSprite();
@@ -492,9 +499,10 @@
                 else state.timeLeft--;
             }
 
-            // ИЗМЕНЕНИЕ 2: Управление персонажем (только для desktop)
+            // Управление персонажем
             function handleKeyDown(e) {
-                if (!state.gameRunning || state.isMobile) return; 
+                // Убран check state.isAnimating
+                if (!state.gameRunning) return; 
                 
                 if (e.key === 'ArrowLeft') {
                     state.baristaX = Math.max(state.baristaX - 20, 0);
@@ -511,72 +519,13 @@
                 elements.barista.style.left = `${state.baristaX}px`;
             }
 
-            // ИЗМЕНЕНИЕ 2: Логика движения для тач-управления
-            function handleTouchMove(e) {
-                if (!state.gameRunning || !state.isMobile) return;
-                
-                e.preventDefault(); 
-
-                // Получаем позицию касания/клика
-                const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-                
-                // Определяем положение касания относительно игрового контейнера
-                const rect = elements.gameContainer.getBoundingClientRect();
-                const touchX = clientX - rect.left;
-                
-                // Нормализуем координаты к внутренней ширине игры (1000px)
-                const normalizedX = (touchX / rect.width) * constants.GAME_WIDTH;
-
-                let targetDirection = 'idle';
-
-                if (normalizedX < constants.GAME_WIDTH / 2) {
-                    // Левая сторона
-                    state.baristaX = Math.max(state.baristaX - constants.MOBILE_MOVE_STEP, 0);
-                    targetDirection = 'left';
-                } else {
-                    // Правая сторона
-                    state.baristaX = Math.min(state.baristaX + constants.MOBILE_MOVE_STEP, constants.GAME_WIDTH - constants.BARISTA_WIDTH); 
-                    targetDirection = 'right';
-                }
-
-                elements.barista.style.left = `${state.baristaX}px`;
-
-                // Запускаем анимацию
-                if (state.currentDirection !== targetDirection) {
-                    updateSprite(targetDirection);
-                } 
-                
-                // Перезапускаем таймаут для возврата в idle
-                clearTimeout(state.idleTimeout);
-                state.idleTimeout = setTimeout(() => {
-                    // Если после движения тачпадом не было нового тапа, возвращаемся в idle
-                    if (!state.isTransitioning && state.currentDirection !== 'idle') { 
-                        const transitionBack = state.currentDirection === 'left' ? 'preLeft' : 'preRight';
-                        state.isTransitioning = true;
-                        state.currentDirection = 'idle'; // Сразу ставим idle, чтобы не перебивать
-                        
-                        let frame = sprites[transitionBack].length - 1;
-                        const animateTransitionBack = () => {
-                            if (frame < 0) {
-                                state.isTransitioning = false;
-                                resetBaristaSprite();
-                                return;
-                            }
-                            elements.barista.style.backgroundImage = `url('${sprites[transitionBack][frame]}')`;
-                            frame--;
-                            setTimeout(animateTransitionBack, 30);
-                        };
-                        animateTransitionBack();
-                    }
-                }, 100); 
-            }
-
-            // Анимация движения (немного упрощена для touch control)
+            // Анимация движения
             let spriteIndex = 0;
             function updateSprite(direction) {
-                if (state.isTransitioning && direction !== 'idle') return;
+                if (state.isTransitioning) return; // Убран check state.isAnimating
                 
-                if (state.currentDirection !== direction && direction !== 'idle') {
+                if ((state.currentDirection === 'idle' && direction !== 'idle') || 
+                    (state.currentDirection !== direction && direction !== 'idle')) {
                     
                     const transitionType = direction === 'left' ? 'preLeft' : 'preRight';
                     state.isTransitioning = true;
@@ -600,14 +549,35 @@
                     return;
                 }
                 
-                // Если мы уже в движении, просто переключаем спрайты
-                if (direction !== 'idle') {
-                    const frames = sprites[direction];
-                    spriteIndex = (spriteIndex + 1) % frames.length;
-                    elements.barista.style.backgroundImage = `url('${frames[spriteIndex]}')`;
-                }
+                const frames = sprites[direction];
+                spriteIndex = (spriteIndex + 1) % frames.length;
+                elements.barista.style.backgroundImage = `url('${frames[spriteIndex]}')`;
+                
+                clearTimeout(state.idleTimeout);
+                state.idleTimeout = setTimeout(() => {
+                    if (!state.isTransitioning && state.currentDirection !== 'idle') { // Убран check state.isAnimating
+                        const transitionBack = state.currentDirection === 'left' ? 'preLeft' : 'preRight';
+                        state.isTransitioning = true;
+                        state.targetDirection = 'idle';
+                        
+                        let frame = sprites[transitionBack].length - 1;
+                        const animateTransitionBack = () => {
+                            if (frame < 0) {
+                                state.isTransitioning = false;
+                                state.currentDirection = 'idle';
+                                resetBaristaSprite();
+                                return;
+                            }
+                            
+                            elements.barista.style.backgroundImage = `url('${sprites[transitionBack][frame]}')`;
+                            frame--;
+                            setTimeout(animateTransitionBack, 30);
+                        };
+                        
+                        animateTransitionBack();
+                    }
+                }, 100); 
             }
-
 
             // Генерация предметов
             function spawnItem() {
@@ -681,6 +651,7 @@
                 if (type === 'superLike') {
                     state.lives = Math.min(state.lives + value, constants.MAX_LIVES);
                     elements.livesCount.textContent = state.lives;
+                    // Убрана playHeroAnimation
                     showOverlayEffect('blove.png');
                 } else {
                     state.likes += value;
@@ -697,6 +668,7 @@
             // Обработка столкновения с опасностями
             function handlePenaltyCollision(type, value) {
                 if (type === 'superFire') {
+                    // Убрана playHeroAnimation
                     showOverlayEffect('firehero.png');
                 }
                 
@@ -710,14 +682,14 @@
                 }
             }
 
-            // Показать оверлей эффекта
+            // Показать оверлей эффекта (обновлено до 1000мс)
             function showOverlayEffect(imageName) {
                 elements.baristaOverlay.style.backgroundImage = `url('images/${imageName}')`;
                 elements.baristaOverlay.style.display = 'block';
                 setTimeout(() => {
                     elements.baristaOverlay.style.display = 'none';
                     elements.baristaOverlay.style.backgroundImage = 'none';
-                }, 1000);
+                }, 1000); // 1 секунда
             }
 
             // Взвешенный случайный выбор
@@ -742,10 +714,12 @@
                 if (isWin) {
                     elements.resultTitle.textContent = 'Вау! Вы — рок-звезда!';
                     elements.resultText.textContent = 'Собрали нужное количество лайков, а не штрафов! Поддержим вашу победу плейлистом на Хэллоуин!';
+                    // Финальная анимация победы
                     elements.heroFinal.style.backgroundImage = `url('${sprites.victory[0]}')`;
                 } else {
                     elements.resultTitle.textContent = 'Игра окончена';
                     elements.resultText.textContent = 'Ой… Похоже, гости ушли в другую кофейню. Заварите себе вдохновляющий эспрессо и попробуйте снова! Может, вам поможет наш плейлист на Хэллоуин?';
+                    // Финальная анимация поражения
                     elements.heroFinal.style.backgroundImage = `url('${sprites.defeat[0]}')`;
                 }
                 
@@ -759,6 +733,7 @@
                 state.likes = 0;
                 state.lives = 3;
                 state.timeLeft = constants.INITIAL_TIME;
+                // isAnimating/isTransitioning/currentDirection сохранены для корректного сброса движения
                 state.isTransitioning = false;
                 state.currentDirection = 'idle';
                 state.targetDirection = 'idle';
@@ -774,7 +749,7 @@
                 });
             }
 
-            // Функция запуска игры после загрузки
+            // ИЗМЕНЕНО 2: Функция запуска игры (переименована)
             function runGame() {
                 resetGame();
                 elements.startScreen.classList.remove('active');
@@ -787,47 +762,55 @@
                 state.intervals.game = setInterval(spawnItem, 800);
             }
 
-            // ИЗМЕНЕНИЕ 1: Функция симуляции загрузки на стартовом экране
-            function startLoading() {
+            // ДОБАВЛЕНО 2: Функция для показа загрузчика и старта
+            function showLoadingAndStart() {
                 if (state.isMobile && !checkOrientation()) {
                     elements.orientationWarning.classList.add('active');
                     return;
                 }
-
-                // Сбрасываем полоску
+                
+                // Скрываем стартовый и финальный экраны
+                elements.startScreen.classList.remove('active');
+                elements.finishScreen.classList.remove('active');
+                // Показываем загрузку
+                elements.loadingScreen.classList.add('active');
                 elements.loaderBar.style.width = '0%';
 
+                // Симуляция загрузки
                 let progress = 0;
                 const loadingInterval = setInterval(() => {
-                    progress += 5; // Увеличиваем на 5% за шаг
+                    progress += 10;
                     elements.loaderBar.style.width = `${progress}%`;
                     
                     if (progress >= 100) {
                         clearInterval(loadingInterval);
-                        // Небольшая задержка перед стартом
+                        // Небольшая задержка после 100%
                         setTimeout(() => {
-                            runGame(); 
-                        }, 300); 
+                            elements.loadingScreen.classList.remove('active');
+                            runGame(); // Запускаем игру
+                        }, 400); 
                     }
-                }, 100); // 100мс на шаг = 2 секунды симуляции загрузки
+                }, 150); // ~1.5 секунды на загрузку
             }
 
+
             // Обработчики событий
-            elements.startBtn.addEventListener('click', startLoading);
-            elements.playAgainBtn.addEventListener('click', startLoading);
+            // ИЗМЕНЕНО 2: Кнопки теперь запускают загрузчик
+            elements.startBtn.addEventListener('click', showLoadingAndStart);
+            elements.playAgainBtn.addEventListener('click', showLoadingAndStart);
             
-            // ИЗМЕНЕНИЕ 2: Используем handleKeyDown только для desktop
             document.addEventListener('keydown', handleKeyDown);
             
-            // ИЗМЕНЕНИЕ 2: Тач-управление для мобильных
-            elements.gameContainer.addEventListener('touchstart', handleTouchMove);
-            elements.gameContainer.addEventListener('click', handleTouchMove); // Для десктопного клика/тестирования, если isMobile=false
-
+            // ИЗМЕНЕНО 4: Обработчики resize и orientationchange
             window.addEventListener('resize', () => {
-                state.isMobile = window.innerWidth <= 768 || ('ontouchstart' in window);
-                initGame(); 
+                state.isMobile = window.innerWidth <= 768;
+                initGame(); // Переинициализируем, чтобы применить масштабирование
             });
-            window.addEventListener('orientationchange', checkOrientation);
+            window.addEventListener('orientationchange', () => {
+                if (checkOrientation()) {
+                    scaleGameContainer(); // Масштабируем, если ориентация стала верной
+                }
+            });
 
             // Инициализация
             initGame();

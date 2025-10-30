@@ -11,6 +11,7 @@
             padding: 0;
             font-family: 'SB Sans', Arial, sans-serif;
             overflow: hidden;
+            /* ИЗМЕНЕНО 3: Цвет фона */
             background: #13181F url('images/gameback.svg') no-repeat center center fixed; 
             background-size: cover; 
             color: white;
@@ -28,6 +29,7 @@
             left: 0;
             width: 100%;
             height: 100%;
+            /* ИЗМЕНЕНО 3: Цвет фона */
             background: #13181F;
             backdrop-filter: blur(10px);
             display: none;
@@ -42,6 +44,7 @@
             max-width: 1000px;
             height: 80vh;
             max-height: 600px;
+            /* ИЗМЕНЕНО 3: Цвет фона */
             background: #13181F;
             
            display: flex;
@@ -58,8 +61,10 @@
         }
         .image-content {
             flex: 1;
+            /* ИЗМЕНЕНО 3: Цвет фона */
             background: #13181F;
             display: flex;
+            /* ИЗМЕНЕНО 1: Центрирование hero-final */
             justify-content: center;
             align-items: center;
             padding: 0px;
@@ -105,8 +110,9 @@
             transform: scale(1.05);
         }
 
+        /* Стиль для кнопки плейлиста на финальном экране: увеличена на 30% и яркость 100% */
         .playlist-btn-final {
-            height: 65px; 
+            height: 65px; /* 50px * 1.3 = 65px */
             opacity: 1.0; 
         }
 
@@ -129,6 +135,7 @@
             margin: 0 auto;
             max-width: 1000px; 
             max-height: 600px;
+            /* ИЗМЕНЕНО 4: Добавлено для масштабирования на мобильных */
             transform-origin: center center;
             transition: transform 0.2s ease-out;
         }
@@ -146,6 +153,7 @@
             image-rendering: pixelated;
         }
         
+        /* Оверлей эффектов (сверху персонажа) */
         #barista-effect-overlay {
             position: absolute;
             top: 0;
@@ -156,7 +164,7 @@
             background-repeat: no-repeat;
             background-position: top center;
             display: none;
-            z-index: 6; 
+            z-index: 6; /* Сверху z-index: 5 у баристы */
             image-rendering: pixelated;
         }
 
@@ -197,10 +205,10 @@
             height: 40px;
         }
         .glow-green {
-            filter: drop-shadow(0 0 15px rgba(255, 62, 44, 0.7)); 
+            filter: drop-shadow(0 0 15px rgba(255, 62, 44, 0.7)); /* #ff3e2c */
         }
         .glow-red {
-            filter: drop-shadow(0 0 15px rgba(246, 147, 53, 0.7)); 
+            filter: drop-shadow(0 0 15px rgba(246, 147, 53, 0.7)); /* #f69335 */
         }
         #hero-final {
             width: 328px;
@@ -234,77 +242,64 @@
             margin-bottom: 30px;
         }
 
-        /* ИЗМЕНЕНО 1: Стили для полосы загрузки */
+        /* ДОБАВЛЕНО 2: Стили для экрана загрузки */
+        #loading-screen {
+            z-index: 1001; /* Поверх других попапов */
+            flex-direction: column;
+        }
+        .loader-content {
+            text-align: center;
+            color: white;
+        }
+        .loader-content h2 { /* Стилизация нового h2 */
+            font-family: 'SB Sans', sans-serif;
+            font-size: 24px;
+            margin-bottom: 20px;
+            font-weight: normal;
+        }
         .loader-bar-container {
-            position: fixed; /* Глобальное позиционирование */
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 8px; /* Тонкая полоска */
-            background: #2a313a; /* Фон полосы */
-            display: none; /* Скрыт по умолчанию */
-            z-index: 2001; /* Выше всего, кроме предупреждения об ориентации */
+            width: 300px;
+            height: 20px;
+            background: #2a313a;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid #444;
         }
         .loader-bar {
-            width: 0%; 
+            width: 0%; /* Начинается с 0 */
             height: 100%;
             background: #4CAF50; /* Зеленый цвет */
+            border-radius: 10px;
             transition: width 0.3s ease-out;
         }
         /* Конец стилей для загрузки */
 
-        /* ИЗМЕНЕНО 2: Адаптация попапов под мобильную горизонтальную ориентацию */
-        @media (max-height: 550px) {
+        @media (max-width: 768px) {
             .popup-content {
-                flex-direction: row; /* Оставляем ряд */
-                height: 95vh; /* Делаем на 95% высоты экрана */
-                max-height: none; /* Убираем ограничение */
+                flex-direction: column;
+                height: 90vh;
+                max-height: none;
             }
-            
-            /* Скрываем картинку */
             .image-content {
                 display: none;
-            }
-
-            /* Заставляем текст занять 100% ШИРИНЫ */
-            .text-content {
-                flex: 1; /* Занять все 100% ширины (т.к. картинки нет) */
-                padding: 20px 30px; /* Уменьшим отступы */
-                overflow-y: auto; /* Добавим прокрутку, если контент не влезет */
-            }
-            
-            /* Уменьшаем шрифты и отступы для маленьких экранов */
-            h1 {
-                font-size: 32px;
-                margin-bottom: 15px;
-            }
-            p {
-                font-size: 16px;
-                margin-bottom: 20px;
-                line-height: 1.5;
-            }
-            .buttons {
-                margin-top: 20px;
-                gap: 10px;
-            }
-            .image-btn { 
-                height: 45px; 
-            }
-            .playlist-btn-final { 
-                height: 58px; /* 45px * 1.3 */
             }
         }
     </style>
 </head>
 <body>
-    <div class="loader-bar-container">
-        <div id="loader-bar" class="loader-bar"></div>
-    </div>
-
     <div id="orientation-warning">
         <img src="images/rotate.png" alt="Поверните устройство">
         <h2>Пожалуйста, поверните устройство</h2>
         <p>Для лучшего игрового опыта игра работает только в горизонтальной ориентации</p>
+    </div>
+
+    <div id="loading-screen" class="fullscreen-popup">
+        <div class="loader-content">
+            <h2>Загрузка...</h2>
+            <div class="loader-bar-container">
+                <div id="loader-bar" class="loader-bar"></div>
+            </div>
+        </div>
     </div>
 
     <div id="start-screen" class="fullscreen-popup active">
@@ -390,8 +385,8 @@
                 resultTitle: document.getElementById('result-title'),
                 resultText: document.getElementById('result-text'),
                 heroFinal: document.getElementById('hero-final'),
-                // ИЗМЕНЕНО 1: Элементы загрузчика
-                loaderBarContainer: document.querySelector('.loader-bar-container'),
+                // ДОБАВЛЕНО 2: Элементы загрузчика
+                loadingScreen: document.getElementById('loading-screen'),
                 loaderBar: document.getElementById('loader-bar'),
             };
 
@@ -423,6 +418,7 @@
                     game: null,
                     time: null
                 },
+                // isAnimating удален
                 isTransitioning: false,
                 currentDirection: 'idle',
                 targetDirection: 'idle',
@@ -430,7 +426,7 @@
                 idleTimeout: null
             };
 
-            // Спрайты персонажа
+            // Спрайты персонажа (обновлены для финального экрана)
             const sprites = {
                 idle: 'images/barista0.png',
                 left: Array.from({length: 9}, (_, i) => `images/left${i}.png`),
@@ -452,7 +448,7 @@
                 }
             }
 
-            // Функция масштабирования игрового контейнера
+            // ДОБАВЛЕНО 4: Функция масштабирования игрового контейнера
             function scaleGameContainer() {
                 if (!elements.gameContainer) return; 
                 
@@ -466,8 +462,10 @@
                 const scaleX = viewportWidth / gameWidth;
                 const scaleY = viewportHeight / gameHeight;
                 
+                // Используем меньший масштаб, чтобы все влезло
                 scale = Math.min(scaleX, scaleY);
                 
+                // Не масштабируем больше 100%
                 if (scale > 1) scale = 1; 
 
                 elements.gameContainer.style.transform = `scale(${scale})`;
@@ -477,6 +475,7 @@
             function initGame() {
                 if (state.isMobile && !checkOrientation()) return;
                 
+                // ДОБАВЛЕНО 4: Масштабируем при инициализации
                 scaleGameContainer();
                 
                 resetBaristaSprite();
@@ -502,6 +501,7 @@
 
             // Управление персонажем
             function handleKeyDown(e) {
+                // Убран check state.isAnimating
                 if (!state.gameRunning) return; 
                 
                 if (e.key === 'ArrowLeft') {
@@ -522,7 +522,7 @@
             // Анимация движения
             let spriteIndex = 0;
             function updateSprite(direction) {
-                if (state.isTransitioning) return; 
+                if (state.isTransitioning) return; // Убран check state.isAnimating
                 
                 if ((state.currentDirection === 'idle' && direction !== 'idle') || 
                     (state.currentDirection !== direction && direction !== 'idle')) {
@@ -555,7 +555,7 @@
                 
                 clearTimeout(state.idleTimeout);
                 state.idleTimeout = setTimeout(() => {
-                    if (!state.isTransitioning && state.currentDirection !== 'idle') { 
+                    if (!state.isTransitioning && state.currentDirection !== 'idle') { // Убран check state.isAnimating
                         const transitionBack = state.currentDirection === 'left' ? 'preLeft' : 'preRight';
                         state.isTransitioning = true;
                         state.targetDirection = 'idle';
@@ -651,6 +651,7 @@
                 if (type === 'superLike') {
                     state.lives = Math.min(state.lives + value, constants.MAX_LIVES);
                     elements.livesCount.textContent = state.lives;
+                    // Убрана playHeroAnimation
                     showOverlayEffect('blove.png');
                 } else {
                     state.likes += value;
@@ -667,6 +668,7 @@
             // Обработка столкновения с опасностями
             function handlePenaltyCollision(type, value) {
                 if (type === 'superFire') {
+                    // Убрана playHeroAnimation
                     showOverlayEffect('firehero.png');
                 }
                 
@@ -680,14 +682,14 @@
                 }
             }
 
-            // Показать оверлей эффекта
+            // Показать оверлей эффекта (обновлено до 1000мс)
             function showOverlayEffect(imageName) {
                 elements.baristaOverlay.style.backgroundImage = `url('images/${imageName}')`;
                 elements.baristaOverlay.style.display = 'block';
                 setTimeout(() => {
                     elements.baristaOverlay.style.display = 'none';
                     elements.baristaOverlay.style.backgroundImage = 'none';
-                }, 1000); 
+                }, 1000); // 1 секунда
             }
 
             // Взвешенный случайный выбор
@@ -712,10 +714,12 @@
                 if (isWin) {
                     elements.resultTitle.textContent = 'Вау! Вы — рок-звезда!';
                     elements.resultText.textContent = 'Собрали нужное количество лайков, а не штрафов! Поддержим вашу победу плейлистом на Хэллоуин!';
+                    // Финальная анимация победы
                     elements.heroFinal.style.backgroundImage = `url('${sprites.victory[0]}')`;
                 } else {
                     elements.resultTitle.textContent = 'Игра окончена';
                     elements.resultText.textContent = 'Ой… Похоже, гости ушли в другую кофейню. Заварите себе вдохновляющий эспрессо и попробуйте снова! Может, вам поможет наш плейлист на Хэллоуин?';
+                    // Финальная анимация поражения
                     elements.heroFinal.style.backgroundImage = `url('${sprites.defeat[0]}')`;
                 }
                 
@@ -729,6 +733,7 @@
                 state.likes = 0;
                 state.lives = 3;
                 state.timeLeft = constants.INITIAL_TIME;
+                // isAnimating/isTransitioning/currentDirection сохранены для корректного сброса движения
                 state.isTransitioning = false;
                 state.currentDirection = 'idle';
                 state.targetDirection = 'idle';
@@ -744,7 +749,7 @@
                 });
             }
 
-            // Функция запуска игры
+            // ИЗМЕНЕНО 2: Функция запуска игры (переименована)
             function runGame() {
                 resetGame();
                 elements.startScreen.classList.remove('active');
@@ -757,26 +762,18 @@
                 state.intervals.game = setInterval(spawnItem, 800);
             }
 
-            // ИЗМЕНЕНО 1: Функция для показа загрузчика и старта
-            function showLoadingAndStart(isRestart = false) {
+            // ДОБАВЛЕНО 2: Функция для показа загрузчика и старта
+            function showLoadingAndStart() {
                 if (state.isMobile && !checkOrientation()) {
                     elements.orientationWarning.classList.add('active');
                     return;
                 }
                 
-                if (isRestart) {
-                    elements.finishScreen.classList.remove('active');
-                }
-                // Показываем стартовый экран
-                elements.startScreen.classList.add('active'); 
-                
-                // Прячем кнопки на стартовом экране
-                elements.startBtn.style.display = 'none'; 
-                const regBtn = elements.startBtn.nextElementSibling;
-                if (regBtn) regBtn.style.display = 'none';
-
-                // Показываем контейнер загрузчика
-                elements.loaderBarContainer.style.display = 'block';
+                // Скрываем стартовый и финальный экраны
+                elements.startScreen.classList.remove('active');
+                elements.finishScreen.classList.remove('active');
+                // Показываем загрузку
+                elements.loadingScreen.classList.add('active');
                 elements.loaderBar.style.width = '0%';
 
                 // Симуляция загрузки
@@ -787,35 +784,31 @@
                     
                     if (progress >= 100) {
                         clearInterval(loadingInterval);
+                        // Небольшая задержка после 100%
                         setTimeout(() => {
-                            // Скрываем загрузчик
-                            elements.loaderBarContainer.style.display = 'none';
-                            
-                            // Возвращаем кнопки
-                            elements.startBtn.style.display = 'block';
-                            if (regBtn) regBtn.style.display = 'block';
-
-                            runGame(); // runGame() скроет startScreen
+                            elements.loadingScreen.classList.remove('active');
+                            runGame(); // Запускаем игру
                         }, 400); 
                     }
-                }, 150);
+                }, 150); // ~1.5 секунды на загрузку
             }
 
 
             // Обработчики событий
-            // ИЗМЕНЕНО 1: Кнопки теперь запускают загрузчик
-            elements.startBtn.addEventListener('click', () => showLoadingAndStart(false));
-            elements.playAgainBtn.addEventListener('click', () => showLoadingAndStart(true));
+            // ИЗМЕНЕНО 2: Кнопки теперь запускают загрузчик
+            elements.startBtn.addEventListener('click', showLoadingAndStart);
+            elements.playAgainBtn.addEventListener('click', showLoadingAndStart);
             
             document.addEventListener('keydown', handleKeyDown);
             
+            // ИЗМЕНЕНО 4: Обработчики resize и orientationchange
             window.addEventListener('resize', () => {
                 state.isMobile = window.innerWidth <= 768;
-                initGame(); 
+                initGame(); // Переинициализируем, чтобы применить масштабирование
             });
             window.addEventListener('orientationchange', () => {
                 if (checkOrientation()) {
-                    scaleGameContainer(); 
+                    scaleGameContainer(); // Масштабируем, если ориентация стала верной
                 }
             });
 

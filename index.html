@@ -5,14 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Собирай лайки, а не штрафы</title>
     <style>
-       /* Основные стили */
+        /* Основные стили */
         body {
             margin: 0;
             padding: 0;
             font-family: 'SB Sans', Arial, sans-serif;
             overflow: hidden;
-            background: #13181F url('images/gameback.svg') no-repeat center center fixed; 
-            background-size: cover; 
+            background: #13181F;
             color: white;
             width: 100vw;
             height: 100vh;
@@ -28,8 +27,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: #131B22;
-            backdrop-filter: blur(10px);
+            background: #13181F;
             display: none;
             justify-content: center;
             align-items: center;
@@ -43,8 +41,7 @@
             height: 80vh;
             max-height: 600px;
             background: #13181F;
-            
-           display: flex;
+            display: flex;
             overflow: hidden;
             box-shadow: 0 0 30px rgba(0, 0, 0, 0.7);
         }
@@ -58,10 +55,10 @@
         }
         .image-content {
             flex: 1;
-            background: #131B22;
+            background: #13181F;
             display: flex;
-            justify-content: flex;
-            align-items: flex;
+            justify-content: center;
+            align-items: center;
             padding: 0px;
         }
 
@@ -111,15 +108,35 @@
             opacity: 1.0; 
         }
 
+        /* Индикатор загрузки */
+        .loading-container {
+            position: absolute;
+            bottom: 40px;
+            left: 40px;
+            right: 40px;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        
+        .loading-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #ff3e2c, #f69335);
+            border-radius: 3px;
+            transition: width 0.3s;
+        }
+
         /* Игровой экран */
         #game-screen { 
             display: none;
             width: 100%;
             height: 100%;
             position: relative;
-            display: flex; 
             justify-content: center; 
             align-items: center; 
+            background: #13181F;
         }
         #game-container {
             width: 1000px; 
@@ -127,7 +144,6 @@
             position: relative;
             overflow: hidden;
             background: url('images/cafe6.png') no-repeat center/cover;
-            margin: 0 auto;
             max-width: 1000px; 
             max-height: 600px; 
         }
@@ -233,6 +249,33 @@
             height: 100px;
             margin-bottom: 30px;
         }
+        
+        /* Управление для мобильных устройств */
+        #mobile-controls {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 150px;
+            display: none;
+            z-index: 20;
+        }
+        
+        .control-area {
+            width: 50%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+        }
+        
+        #left-control {
+            left: 0;
+        }
+        
+        #right-control {
+            right: 0;
+        }
+        
         @media (max-width: 768px) {
             .popup-content {
                 flex-direction: column;
@@ -240,7 +283,17 @@
                 max-height: none;
             }
             .image-content {
-                display: none;
+                display: flex;
+                flex: 1;
+            }
+            #game-container {
+                width: 100vw;
+                height: 80vh;
+                max-width: none;
+                max-height: none;
+            }
+            #mobile-controls {
+                display: block;
             }
         }
     </style>
@@ -263,6 +316,9 @@
                     <a href="https://app.zvuk-b2b.com/login" target="_blank">
                         <img src="bbt reg.png" alt="Попробовать сервис" class="image-btn">
                     </a>
+                </div>
+                <div class="loading-container">
+                    <div class="loading-bar" id="loading-bar"></div>
                 </div>
             </div>
             <div class="image-content">
@@ -289,6 +345,10 @@
             </div>
             <div id="barista">
                 <div id="barista-effect-overlay"></div>
+            </div>
+            <div id="mobile-controls">
+                <div class="control-area" id="left-control"></div>
+                <div class="control-area" id="right-control"></div>
             </div>
         </div>
     </div>
@@ -335,6 +395,9 @@
                 resultTitle: document.getElementById('result-title'),
                 resultText: document.getElementById('result-text'),
                 heroFinal: document.getElementById('hero-final'),
+                loadingBar: document.getElementById('loading-bar'),
+                leftControl: document.getElementById('left-control'),
+                rightControl: document.getElementById('right-control')
             };
 
             // Константы игры
@@ -350,7 +413,8 @@
                 INITIAL_TIME: 90,
                 WIN_SCORE: 10,
                 MAX_LIVES: 5,
-                SUPER_HEART_VALUE: 2
+                SUPER_HEART_VALUE: 2,
+                MOVE_SPEED: 30 // Увеличена скорость движения
             };
 
             // Состояние игры
@@ -365,12 +429,15 @@
                     game: null,
                     time: null
                 },
-                // isAnimating удален
                 isTransitioning: false,
                 currentDirection: 'idle',
                 targetDirection: 'idle',
                 lastMoveTime: 0,
-                idleTimeout: null
+                idleTimeout: null,
+                touchControls: {
+                    left: false,
+                    right: false
+                }
             };
 
             // Спрайты персонажа (обновлены для финального экрана)
@@ -378,11 +445,24 @@
                 idle: 'images/barista0.png',
                 left: Array.from({length: 9}, (_, i) => `images/left${i}.png`),
                 right: Array.from({length: 9}, (_, i) => `images/right${i}.png`),
-                preLeft: Array.from({length: 3}, (_, i) => `images/preleft${i+1}.png`),
-                preRight: Array.from({length: 3}, (_, i) => `images/preright${i+1}.png`),
+                preLeft: Array.from({length: 5}, (_, i) => `images/preleft${i+1}.png`),
+                preRight: Array.from({length: 5}, (_, i) => `images/preright${i+1}.png`),
                 victory: ['images/fherodance-4.webp'], 
                 defeat: ['images/herodancedie.webp']
             };
+
+            // Инициализация загрузки
+            function initLoading() {
+                let progress = 0;
+                const loadingInterval = setInterval(() => {
+                    progress += 1;
+                    elements.loadingBar.style.width = `${progress}%`;
+                    
+                    if (progress >= 100) {
+                        clearInterval(loadingInterval);
+                    }
+                }, 30); // 3 секунды на загрузку
+            }
 
             // Проверка ориентации
             function checkOrientation() {
@@ -403,6 +483,15 @@
                 state.baristaX = (constants.GAME_WIDTH - constants.BARISTA_WIDTH) / 2; 
                 elements.barista.style.left = `${state.baristaX}px`;
                 elements.barista.style.bottom = `${constants.BOTTOM_OFFSET}px`;
+                
+                // Настройка размеров для мобильных устройств
+                if (state.isMobile) {
+                    elements.gameContainer.style.width = '100vw';
+                    elements.gameContainer.style.height = '80vh';
+                } else {
+                    elements.gameContainer.style.width = '1000px';
+                    elements.gameContainer.style.height = '600px';
+                }
             }
 
             // Сброс спрайта баристы
@@ -422,15 +511,14 @@
 
             // Управление персонажем
             function handleKeyDown(e) {
-                // Убран check state.isAnimating
                 if (!state.gameRunning) return; 
                 
                 if (e.key === 'ArrowLeft') {
-                    state.baristaX = Math.max(state.baristaX - 20, 0);
+                    state.baristaX = Math.max(state.baristaX - constants.MOVE_SPEED, 0);
                     state.targetDirection = 'left';
                     updateSprite('left');
                 } else if (e.key === 'ArrowRight') {
-                    state.baristaX = Math.min(state.baristaX + 20, constants.GAME_WIDTH - constants.BARISTA_WIDTH); 
+                    state.baristaX = Math.min(state.baristaX + constants.MOVE_SPEED, constants.GAME_WIDTH - constants.BARISTA_WIDTH); 
                     state.targetDirection = 'right';
                     updateSprite('right');
                 } else {
@@ -440,10 +528,65 @@
                 elements.barista.style.left = `${state.baristaX}px`;
             }
 
-            // Анимация движения
+            // Управление для мобильных устройств
+            function initMobileControls() {
+                if (!state.isMobile) return;
+                
+                // Обработка нажатий
+                elements.leftControl.addEventListener('touchstart', (e) => {
+                    e.preventDefault();
+                    state.touchControls.left = true;
+                });
+                
+                elements.rightControl.addEventListener('touchstart', (e) => {
+                    e.preventDefault();
+                    state.touchControls.right = true;
+                });
+                
+                // Обработка отпускания
+                elements.leftControl.addEventListener('touchend', (e) => {
+                    e.preventDefault();
+                    state.touchControls.left = false;
+                    if (!state.touchControls.right) {
+                        state.targetDirection = 'idle';
+                        updateSprite('idle');
+                    }
+                });
+                
+                elements.rightControl.addEventListener('touchend', (e) => {
+                    e.preventDefault();
+                    state.touchControls.right = false;
+                    if (!state.touchControls.left) {
+                        state.targetDirection = 'idle';
+                        updateSprite('idle');
+                    }
+                });
+                
+                // Обработка движения
+                function handleMobileMovement() {
+                    if (!state.gameRunning) return;
+                    
+                    if (state.touchControls.left) {
+                        state.baristaX = Math.max(state.baristaX - constants.MOVE_SPEED, 0);
+                        state.targetDirection = 'left';
+                        updateSprite('left');
+                    } else if (state.touchControls.right) {
+                        state.baristaX = Math.min(state.baristaX + constants.MOVE_SPEED, constants.GAME_WIDTH - constants.BARISTA_WIDTH); 
+                        state.targetDirection = 'right';
+                        updateSprite('right');
+                    }
+                    
+                    elements.barista.style.left = `${state.baristaX}px`;
+                }
+                
+                // Обновление позиции каждые 16мс (~60fps)
+                setInterval(handleMobileMovement, 16);
+            }
+
+            // Анимация движения (ускоренная)
             let spriteIndex = 0;
             function updateSprite(direction) {
-                if (state.isTransitioning) return; // Убран check state.isAnimating
+                if (state.isTransitioning) return;
                 
                 if ((state.currentDirection === 'idle' && direction !== 'idle') || 
                     (state.currentDirection !== direction && direction !== 'idle')) {
@@ -463,10 +606,16 @@
                         
                         elements.barista.style.backgroundImage = `url('${sprites[transitionType][frame]}')`;
                         frame++;
-                        setTimeout(animateTransition, 30); 
+                        setTimeout(animateTransition, 20); // Ускоренная анимация
                     };
                     
                     animateTransition();
+                    return;
+                }
+                
+                if (direction === 'idle') {
+                    resetBaristaSprite();
+                    state.currentDirection = 'idle';
                     return;
                 }
                 
@@ -476,7 +625,7 @@
                 
                 clearTimeout(state.idleTimeout);
                 state.idleTimeout = setTimeout(() => {
-                    if (!state.isTransitioning && state.currentDirection !== 'idle') { // Убран check state.isAnimating
+                    if (!state.isTransitioning && state.currentDirection !== 'idle') {
                         const transitionBack = state.currentDirection === 'left' ? 'preLeft' : 'preRight';
                         state.isTransitioning = true;
                         state.targetDirection = 'idle';
@@ -492,7 +641,7 @@
                             
                             elements.barista.style.backgroundImage = `url('${sprites[transitionBack][frame]}')`;
                             frame--;
-                            setTimeout(animateTransitionBack, 30);
+                            setTimeout(animateTransitionBack, 20); // Ускоренная анимация
                         };
                         
                         animateTransitionBack();
@@ -572,7 +721,6 @@
                 if (type === 'superLike') {
                     state.lives = Math.min(state.lives + value, constants.MAX_LIVES);
                     elements.livesCount.textContent = state.lives;
-                    // Убрана playHeroAnimation
                     showOverlayEffect('blove.png');
                 } else {
                     state.likes += value;
@@ -589,7 +737,6 @@
             // Обработка столкновения с опасностями
             function handlePenaltyCollision(type, value) {
                 if (type === 'superFire') {
-                    // Убрана playHeroAnimation
                     showOverlayEffect('firehero.png');
                 }
                 
@@ -658,6 +805,8 @@
                 state.isTransitioning = false;
                 state.currentDirection = 'idle';
                 state.targetDirection = 'idle';
+                state.touchControls.left = false;
+                state.touchControls.right = false;
                 
                 elements.likesCount.textContent = `0/${constants.WIN_SCORE}`;
                 elements.livesCount.textContent = '3';
@@ -699,7 +848,9 @@
             window.addEventListener('orientationchange', checkOrientation);
 
             // Инициализация
+            initLoading();
             initGame();
+            initMobileControls();
         });
     </script>
 </body>

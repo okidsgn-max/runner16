@@ -143,7 +143,7 @@
             height: 600px; 
             position: relative;
             overflow: hidden;
-            background: url('images/cafe6.png') no-repeat center/cover;
+            background: url('images/cafe6.webp') no-repeat center/cover;
             max-width: 1000px; 
             max-height: 600px; 
         }
@@ -325,8 +325,8 @@
         <div class="popup-content">
             <div class="text-content">
                 <img class="logo" src="images/Logo.svg" alt="Логотип">
-                <h1>Собирайте лайки, а не страйки</h1>
-                <p>Представьте, что вы бариста с горячим сердцем и крепким кофе! Ваша миссия: ловить сердечки от довольных гостей и уворачивайся от 💀черепов — ведь это штрафы за нелегальную музыку! Чем больше лайков — тем больше любви, славы и чаевых 💸</p>
+                <h1>Собирайте лайки, а не штрафы</h1>
+                <p>Представьте, что вы бариста с горячим сердцем и крепким кофе! Ваша миссия: ловить сердечки и монетки от довольных гостей и уворачивайся от 💀черепов — ведь это штрафы за нелегальную музыку! Чем больше лайков — тем больше любви, славы и чаевых 💸</p>
                 <div class="buttons">
                     <img id="start-game-btn" src="bbt play.png" alt="Играть" class="image-btn">
                     <a href="https://app.zvuk-b2b.com/register?utm_source=button&utm_medium=rega&utm_campaign=halloween&utm_id=game&utm_content=start" target="_blank">
@@ -489,7 +489,7 @@
                     'images/superheart.png',
                     'images/skull.png',
                     'images/superskull.png',
-                    'images/cafe6.png'
+                    'images/cafe6.webp'
                 ];
 
                 allSprites.forEach(sprite => {
@@ -708,7 +708,7 @@
                 item.className = 'falling-item';
                 
                 const items = [
-                    { type: 'like', image: 'images/heart.png', value: 1 },
+                    { type: 'like', image: 'images/coin.png', value: 1 },
                     { type: 'superLike', image: 'images/superheart.png', value: constants.SUPER_HEART_VALUE },
                     { type: 'fire', image: 'images/skull.png', value: 1 },
                     { type: 'superFire', image: 'images/superskull.png', value: 2 }, 
